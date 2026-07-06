@@ -1,0 +1,62 @@
+[gd_scene format=3 uid="uid://dnejb3yrjx5bt"]
+
+[ext_resource type="Script" uid="uid://drrle1pr2fj26" path="res://scripts/player/player.gd" id="1_player"]
+[ext_resource type="Script" uid="uid://cgfbi25d31a0u" path="res://scripts/components/health_component.gd" id="2_health"]
+[ext_resource type="Script" uid="uid://bv6xite5nswn5" path="res://scripts/components/hurtbox_component.gd" id="3_hurtbox"]
+[ext_resource type="Script" uid="uid://8yoq0hxve45r" path="res://scripts/player/ability_controller.gd" id="4_ability"]
+[ext_resource type="Script" uid="uid://3eutgkr32b3c" path="res://scripts/ui/health_bar.gd" id="5_healthbar"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
+radius = 18.0
+height = 64.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hurt"]
+radius = 20.0
+height = 68.0
+
+[node name="Player" type="CharacterBody2D" unique_id=1474315729]
+collision_layer = 2
+script = ExtResource("1_player")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1954377509]
+
+[node name="Visual" type="ColorRect" parent="." unique_id=1998009591]
+offset_left = -18.0
+offset_top = -32.0
+offset_right = 18.0
+offset_bottom = 32.0
+color = Color(0.4, 0.75, 1, 1)
+
+[node name="FacingMarker" type="Polygon2D" parent="." unique_id=216106730]
+position = Vector2(0, -16)
+color = Color(1, 0.9, 0.3, 1)
+polygon = PackedVector2Array(16, -6, 30, 0, 16, 6)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1007322291]
+shape = SubResource("CapsuleShape2D_body")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=708524317]
+process_callback = 0
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+
+[node name="HealthComponent" type="Node" parent="." unique_id=750703917]
+script = ExtResource("2_health")
+
+[node name="HurtboxComponent" type="Area2D" parent="." unique_id=1954731948]
+collision_layer = 16
+collision_mask = 40
+script = ExtResource("3_hurtbox")
+health = NodePath("../HealthComponent")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent" unique_id=1682359464]
+shape = SubResource("CapsuleShape2D_hurt")
+
+[node name="AbilityController" type="Node" parent="." unique_id=1807488001]
+script = ExtResource("4_ability")
+
+[node name="HitboxPivot" type="Node2D" parent="." unique_id=187937818]
+
+[node name="HealthBar" type="Node2D" parent="." unique_id=1620988492]
+position = Vector2(0, -72)
+script = ExtResource("5_healthbar")

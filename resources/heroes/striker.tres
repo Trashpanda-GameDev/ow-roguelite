@@ -1,0 +1,73 @@
+[gd_resource type="Resource" script_class="Hero" format=3 uid="uid://cj2ahtirlvnc2"]
+
+[ext_resource type="Script" uid="uid://k56ihyyv2h24" path="res://scripts/heroes/hero.gd" id="1_hero"]
+[ext_resource type="Script" uid="uid://hpbinhcyys1e" path="res://scripts/heroes/abilities/melee_slash.gd" id="2_slash"]
+[ext_resource type="Script" uid="uid://cxwnadvy2xass" path="res://scripts/heroes/abilities/dash_ability.gd" id="3_dash"]
+[ext_resource type="Script" uid="uid://dioymsoxk8pgb" path="res://scripts/heroes/abilities/projectile_ability.gd" id="4_proj_ab"]
+[ext_resource type="Script" uid="uid://c0vcfcmcr6tu4" path="res://scripts/heroes/abilities/aoe_burst.gd" id="5_aoe"]
+[ext_resource type="Script" path="res://scripts/heroes/abilities/ground_slam.gd" id="7_slam"]
+[ext_resource type="PackedScene" uid="uid://cf3gfan0p2beb" path="res://scenes/projectiles/projectile.tscn" id="6_proj"]
+
+[sub_resource type="Resource" id="Ability_slam"]
+script = ExtResource("7_slam")
+display_name = "Ground Slam"
+description = "Slam to the ground; the higher you are, the harder it hits."
+cooldown = 3.0
+slam_speed = 1500.0
+descent_damage = 12.0
+descent_radius = 42.0
+base_damage = 20.0
+damage_per_height = 0.2
+max_damage = 220.0
+radius = 140.0
+lifetime = 0.2
+knockback = 380.0
+
+[sub_resource type="Resource" id="Ability_dash"]
+script = ExtResource("3_dash")
+display_name = "Dash"
+description = "A quick dash in the direction you're moving."
+cooldown = 0.8
+
+[sub_resource type="Resource" id="Ability_primary"]
+script = ExtResource("2_slash")
+damage = 30.0
+reach = 64.0
+knockback = 320.0
+display_name = "Slash"
+description = "A quick melee strike."
+cooldown = 0.35
+
+[sub_resource type="Resource" id="Ability_secondary"]
+script = ExtResource("4_proj_ab")
+damage = 18.0
+speed = 1000.0
+knockback = 150.0
+display_name = "Bolt"
+description = "Fire a fast bolt in the aim direction."
+cooldown = 0.6
+projectile_scene = ExtResource("6_proj")
+
+[sub_resource type="Resource" id="Ability_ultimate"]
+script = ExtResource("5_aoe")
+damage = 90.0
+radius = 220.0
+lifetime = 0.4
+knockback = 440.0
+display_name = "Blade Storm"
+description = "Unleash a wide burst of blades around you."
+is_ultimate = true
+
+[resource]
+script = ExtResource("1_hero")
+id = &"striker"
+display_name = "Striker"
+description = "A balanced melee bruiser. Starter hero."
+max_health = 120.0
+move_speed = 340.0
+jump_velocity = 640.0
+primary = SubResource("Ability_primary")
+secondary = SubResource("Ability_secondary")
+dash = SubResource("Ability_dash")
+ability_1 = SubResource("Ability_slam")
+ultimate = SubResource("Ability_ultimate")

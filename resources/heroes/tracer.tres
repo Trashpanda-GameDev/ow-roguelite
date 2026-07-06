@@ -1,0 +1,71 @@
+[gd_resource type="Resource" script_class="Hero" format=3 uid="uid://c4l45lmog6yax"]
+
+[ext_resource type="Script" uid="uid://k56ihyyv2h24" path="res://scripts/heroes/hero.gd" id="1_hero"]
+[ext_resource type="Script" uid="uid://dioymsoxk8pgb" path="res://scripts/heroes/abilities/projectile_ability.gd" id="2_proj_ab"]
+[ext_resource type="Script" uid="uid://hpbinhcyys1e" path="res://scripts/heroes/abilities/melee_slash.gd" id="3_melee"]
+[ext_resource type="Script" uid="uid://iaiyrykokt7n" path="res://scripts/heroes/abilities/blink_ability.gd" id="4_blink"]
+[ext_resource type="Script" uid="uid://bqh2cr6tb8oog" path="res://scripts/heroes/abilities/recall_ability.gd" id="5_recall"]
+[ext_resource type="PackedScene" uid="uid://cf3gfan0p2beb" path="res://scenes/projectiles/projectile.tscn" id="6_bolt"]
+[ext_resource type="PackedScene" uid="uid://dhpdbmnljliwr" path="res://scenes/projectiles/pulse_bomb.tscn" id="7_bomb"]
+
+[sub_resource type="Resource" id="Ability_recall"]
+script = ExtResource("5_recall")
+display_name = "Recall"
+description = "Rewind to your position and health from 3 seconds ago."
+cooldown = 8.0
+
+[sub_resource type="Resource" id="Ability_blink"]
+script = ExtResource("4_blink")
+distance = 230.0
+display_name = "Blink"
+description = "Teleport a short distance. Holds 3 charges that refill over time."
+cooldown = 0.0
+max_charges = 3
+
+[sub_resource type="Resource" id="Ability_primary"]
+script = ExtResource("2_proj_ab")
+damage = 8.0
+speed = 1400.0
+knockback = 40.0
+spread_degrees = 15.0
+display_name = "Pulse Pistols"
+description = "A quick 10-round burst with heavy spread, then reload."
+cooldown = 0.06
+projectile_scene = ExtResource("6_bolt")
+max_ammo = 10
+
+[sub_resource type="Resource" id="Ability_secondary"]
+script = ExtResource("3_melee")
+damage = 22.0
+reach = 56.0
+lifetime = 0.1
+knockback = 220.0
+display_name = "Quick Melee"
+description = "A fast close-range strike."
+cooldown = 0.7
+
+[sub_resource type="Resource" id="Ability_ultimate"]
+script = ExtResource("2_proj_ab")
+damage = 40.0
+speed = 900.0
+knockback = 100.0
+display_name = "Pulse Bomb"
+description = "Lob a bomb that detonates in a large blast."
+is_ultimate = true
+projectile_scene = ExtResource("7_bomb")
+
+[resource]
+script = ExtResource("1_hero")
+id = &"tracer"
+display_name = "Tracer"
+description = "Fast, fragile skirmisher. Blink and Recall to dance around danger."
+max_health = 90.0
+move_speed = 400.0
+jump_velocity = 650.0
+air_control = 0.95
+max_air_jumps = 0
+primary = SubResource("Ability_primary")
+secondary = SubResource("Ability_secondary")
+dash = SubResource("Ability_blink")
+ability_2 = SubResource("Ability_recall")
+ultimate = SubResource("Ability_ultimate")

@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://bproj00tile000x"]
+
+[ext_resource type="Script" path="res://scripts/projectiles/projectile.gd" id="1_proj"]
+[ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="2_hitbox"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_proj"]
+radius = 9.0
+
+[node name="Projectile" type="Node2D"]
+script = ExtResource("1_proj")
+
+[node name="HitboxComponent" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+script = ExtResource("2_hitbox")
+one_shot = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+shape = SubResource("CircleShape2D_proj")
+
+[node name="Visual" type="Polygon2D" parent="."]
+color = Color(1, 0.85, 0.35, 1)
+polygon = PackedVector2Array(-10, -5, 12, 0, -10, 5)
