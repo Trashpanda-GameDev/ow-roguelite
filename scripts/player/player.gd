@@ -72,8 +72,11 @@ func cycle_hero() -> void:
 	if list.is_empty():
 		return
 	var cur: StringName = hero.id if hero else &""
-	var next_id: StringName = list[(list.find(cur) + 1) % list.size()]
-	var new_hero := load("res://resources/heroes/%s.tres" % next_id) as Hero
+	swap_to(list[(list.find(cur) + 1) % list.size()])
+
+## Hot-swap this player to a specific hero (no reload).
+func swap_to(hero_id: StringName) -> void:
+	var new_hero := load("res://resources/heroes/%s.tres" % hero_id) as Hero
 	if new_hero == null:
 		return
 	_active_effect = null
@@ -81,7 +84,7 @@ func cycle_hero() -> void:
 	_apply_hero()
 	var pidx := int(get_meta(&"player_index", -1))
 	if pidx >= 0:
-		Players.set_hero(pidx, next_id)
+		Players.set_hero(pidx, hero_id)
 	EventBus.player_spawned.emit(self) # HUD/banner rebind to the new kit
 
 func _apply_hero() -> void:

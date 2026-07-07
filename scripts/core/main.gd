@@ -65,8 +65,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		KEY_V: _toggle_split()
 
 func _swap_p1(hero_id: StringName) -> void:
-	Players.set_hero(0, hero_id)
-	get_tree().reload_current_scene()
+	if Players.players.size() > 0 and is_instance_valid(Players.players[0]):
+		Players.players[0].swap_to(hero_id)
+	else:
+		Players.set_hero(0, hero_id)
 
 func _toggle_split() -> void:
 	GameManager.split_screen = not GameManager.split_screen
