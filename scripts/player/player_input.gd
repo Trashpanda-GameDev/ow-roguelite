@@ -1,86 +1,108 @@
 class_name PlayerInput
 extends Node
-## Per-player input source. device == -1 -> keyboard/mouse; device >= 0 -> that
-## joypad. Abilities and movement read through this instead of global Input, so
-## multiple local players each get their own controls.
+## Per-player input source. if device is -1 it's keyboard/mouse, if device is >= 0 it's that joypad's index.
+## 
+## setup() clones the InputMap actions into a private "p{index}_{action}" linked to that player's device,
+## so we don't have to manually set up 4 players worth of controls inside the InputMap allowing the use of
+## the InputMap while still splitting the controls per player device dynamically
 
 @export var device: int = -1
 
-# Digital action state (edge-detected each frame).
-var _curr := {}
-var _prev := {}
-
-const _ACTIONS: Array[StringName] = [
-	&"move_left", &"move_right", &"move_up", &"move_down",
-	&"jump", &"dash", &"attack_primary", &"attack_secondary",
-	&"ability_1", &"ability_2", &"ultimate", &"interact", &"pause",
+# Base game actions (must exist in the project InputMap). Cloned per player.
+const BASE_ACTIONS: Array[StringName] = [
+	# movement
+	&"move_left",
+	&"move_right",
+	&"move_up",
+	&"move_down",
+	&"jump",
+	&"dash",
+	# combat
+	&"attack_primary",
+	&"attack_secondary",
+	&"ability_1",
+	&"ability_2",
+	&"ultimate",
+	# other
 	&"switch_character",
+	&"interact",
 ]
 
-# Keyboard/mouse bindings (physical keycodes).
-const _KEYS := {
-	&"move_left": KEY_A, &"move_right": KEY_D, &"move_up": KEY_W, &"move_down": KEY_S,
-	&"jump": KEY_SPACE, &"dash": KEY_SHIFT,
-	&"ability_1": KEY_Q, &"ability_2": KEY_E, &"ultimate": KEY_R,
-	&"interact": KEY_F, &"pause": KEY_ESCAPE, &"switch_character": KEY_TAB,
-}
-const _MOUSE := { &"attack_primary": MOUSE_BUTTON_LEFT, &"attack_secondary": MOUSE_BUTTON_RIGHT }
+var _player_index: int = 0
+var _actions_built: bool = false
 
-# Gamepad button bindings (Godot JoyButton indices).
-const _PAD_BTN := {
-	&"jump": JOY_BUTTON_A, &"dash": JOY_BUTTON_B,
-	&"attack_primary": JOY_BUTTON_X, &"attack_secondary": JOY_BUTTON_Y,
-	&"ability_1": JOY_BUTTON_LEFT_SHOULDER, &"ability_2": JOY_BUTTON_RIGHT_SHOULDER,
-	&"interact": JOY_BUTTON_DPAD_UP, &"pause": JOY_BUTTON_START,
-	&"switch_character": JOY_BUTTON_BACK, # Create / Share / View
-}
-const _STICK_DEADZONE := 0.4
+## Assign this player's device + index and build its private actions.
+func setup(device_id: int, player_index: int) -> void:
+	if _actions_built and player_index != _player_index:
+		_erase_actions_for(_player_index) # moving to a new prefix: drop the old one
+		_actions_built = false
+	device = device_id
+	_player_index = player_index
+	_build_actions()
 
-func _ready() -> void:
-	# Update input before anything that reads it this physics frame.
-	process_physics_priority = -100
-	for a in _ACTIONS:
-		_curr[a] = false
-		_prev[a] = false
-
-func _physics_process(_delta: float) -> void:
-	for a in _ACTIONS:
-		_prev[a] = _curr[a]
-		_curr[a] = _raw_pressed(a)
-
+# --- Public API (unchanged for callers) ---
 func is_pressed(action: StringName) -> bool:
-	return _curr.get(action, false)
+	_ensure_actions_built()
+	return Input.is_action_pressed(_scoped_action_name(action))
 
 func is_just_pressed(action: StringName) -> bool:
-	return _curr.get(action, false) and not _prev.get(action, false)
+	_ensure_actions_built()
+	return Input.is_action_just_pressed(_scoped_action_name(action))
 
 func is_just_released(action: StringName) -> bool:
-	return not _curr.get(action, false) and _prev.get(action, false)
+	_ensure_actions_built()
+	return Input.is_action_just_released(_scoped_action_name(action))
 
+## Analog for pads (deadzone from the InputMap), digital for keyboard.
 func get_move() -> Vector2:
-	var x := (1.0 if is_pressed(&"move_right") else 0.0) - (1.0 if is_pressed(&"move_left") else 0.0)
-	var y := (1.0 if is_pressed(&"move_down") else 0.0) - (1.0 if is_pressed(&"move_up") else 0.0)
-	return Vector2(x, y)
+	_ensure_actions_built()
+	return Input.get_vector(
+		_scoped_action_name(&"move_left"),
+		_scoped_action_name(&"move_right"),
+		_scoped_action_name(&"move_up"),
+		_scoped_action_name(&"move_down")
+	)
 
-func _raw_pressed(action: StringName) -> bool:
+# --- Internal functions (privates) ---
+
+func _exit_tree() -> void:
+	if _actions_built:
+		_erase_actions_for(_player_index)
+
+## Base action name -> player's private copy ("jump" becomes "p1_jump")
+func _scoped_action_name(base_action: StringName) -> StringName:
+	return StringName("p%d_%s" % [_player_index, base_action])
+
+func _ensure_actions_built() -> void:
+	if not _actions_built:
+		_build_actions()
+
+func _build_actions() -> void:
+	for base_action in BASE_ACTIONS:
+		if not InputMap.has_action(base_action):
+			push_warning("PlayerInput: base action '%s' missing from InputMap" % base_action)
+			continue
+		var scoped_action := _scoped_action_name(base_action)
+		if InputMap.has_action(scoped_action):
+			InputMap.action_erase_events(scoped_action)
+		else:
+			InputMap.add_action(scoped_action, InputMap.action_get_deadzone(base_action))
+		for base_event in InputMap.action_get_events(base_action):
+			if not _event_matches_device(base_event):
+				continue
+			var scoped_event := base_event.duplicate()
+			scoped_event.device = device # joypad events are now only this specific joypad
+			InputMap.action_add_event(scoped_action, scoped_event)
+	_actions_built = true
+
+## Makes sure the events stay consistent for Keyboard/mouse and joypads.
+func _event_matches_device(event: InputEvent) -> bool:
 	if device < 0:
-		return _keyboard_pressed(action)
-	return _pad_pressed(action)
+		return event is InputEventKey or event is InputEventMouseButton
+	return event is InputEventJoypadButton or event is InputEventJoypadMotion
 
-func _keyboard_pressed(action: StringName) -> bool:
-	if _KEYS.has(action) and Input.is_physical_key_pressed(_KEYS[action]):
-		return true
-	if _MOUSE.has(action) and Input.is_mouse_button_pressed(_MOUSE[action]):
-		return true
-	return false
-
-func _pad_pressed(action: StringName) -> bool:
-	match action:
-		&"move_left": return Input.get_joy_axis(device, JOY_AXIS_LEFT_X) < -_STICK_DEADZONE or Input.is_joy_button_pressed(device, JOY_BUTTON_DPAD_LEFT)
-		&"move_right": return Input.get_joy_axis(device, JOY_AXIS_LEFT_X) > _STICK_DEADZONE or Input.is_joy_button_pressed(device, JOY_BUTTON_DPAD_RIGHT)
-		&"move_up": return Input.get_joy_axis(device, JOY_AXIS_LEFT_Y) < -_STICK_DEADZONE
-		&"move_down": return Input.get_joy_axis(device, JOY_AXIS_LEFT_Y) > _STICK_DEADZONE
-		&"ultimate": return Input.get_joy_axis(device, JOY_AXIS_TRIGGER_RIGHT) > 0.5
-	if _PAD_BTN.has(action):
-		return Input.is_joy_button_pressed(device, _PAD_BTN[action])
-	return false
+func _erase_actions_for(player_index: int) -> void:
+	for base_action in BASE_ACTIONS:
+		var scoped_action := StringName("p%d_%s" % [player_index, base_action])
+		if InputMap.has_action(scoped_action):
+			InputMap.erase_action(scoped_action)

@@ -43,7 +43,7 @@ func spawn_all(into: Node, points: Array[Vector2]) -> Array[Node]:
 		if points.size() > 0:
 			p.global_position = points[i % points.size()]
 		if p.input:
-			p.input.device = cfg["device"]
+			p.input.setup(cfg["device"], i)
 		p.set_meta(&"player_index", i)
 		players.append(p)
 	return players
