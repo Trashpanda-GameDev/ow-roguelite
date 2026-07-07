@@ -1,38 +1,73 @@
 extends Node
-## Entry point. For now boots straight into a run with the starter hero.
-## Later this becomes: main menu -> hero select -> run.
+## Entry point. Spawns the local players, sets up cameras (shared or split) and
+## per-player HUDs, and restarts the level when the whole party is down.
 
-@export var starter_hero: StringName = &"tracer"
+const ABILITY_HUD := preload("res://scripts/ui/ability_hud.gd")
 
-# Debug: press a number key to swap hero and restart the level.
-const DEBUG_HEROES := {
-	KEY_1: &"tracer",
-	KEY_2: &"striker",
-}
+@export var default_spawn: Vector2 = Vector2(400, 700)
 
-@export var restart_delay: float = 3.0 ## seconds after death before the level restarts
+@onready var level: Node = $TestLevel
+@onready var hud: CanvasLayer = $HUD
+
+var _camera_manager: CameraManager
 
 func _ready() -> void:
-	# Keep the current run's hero across scene reloads (debug hero switch).
 	if not RunManager.active:
-		RunManager.start_run(starter_hero)
+		RunManager.start_run(&"local")
 	GameManager.state = GameManager.State.RUN
-	EventBus.run_ended.connect(_on_run_ended)
+	Players.ensure_roster()
+	_spawn_players()
+	_setup_cameras()
+	_setup_player_huds()
 
-func _on_run_ended(victory: bool) -> void:
-	if victory:
-		return
-	_restart_after_delay()
+func _spawn_players() -> void:
+	Players.spawn_all(level, _spawn_points())
 
-func _restart_after_delay() -> void:
-	await get_tree().create_timer(restart_delay).timeout
-	# Restart the run with the same hero, then reload the level.
-	RunManager.start_run(RunManager.hero_id)
-	get_tree().reload_current_scene()
+func _spawn_points() -> Array[Vector2]:
+	var points: Array[Vector2] = []
+	var node := level.get_node_or_null(^"SpawnPoints")
+	if node:
+		for c in node.get_children():
+			if c is Node2D:
+				points.append((c as Node2D).global_position)
+	if points.is_empty():
+		points.append(default_spawn)
+	return points
+
+func _setup_cameras() -> void:
+	_camera_manager = CameraManager.new()
+	add_child(_camera_manager)
+	_camera_manager.setup(GameManager.split_screen)
+
+func _setup_player_huds() -> void:
+	for i in Players.players.size():
+		var ah := HBoxContainer.new()
+		ah.set_script(ABILITY_HUD)
+		hud.add_child(ah)
+		ah.bind_to(Players.players[i])
+		ah.place_in(_hud_rect(i))
+
+## Where player i's HUD goes: their split viewport, or a bottom slice in shared.
+func _hud_rect(index: int) -> Rect2:
+	if GameManager.split_screen and Players.players.size() > 1:
+		return _camera_manager.get_view_rect(index)
+	var screen := get_viewport().get_visible_rect().size
+	var w := screen.x / float(maxi(1, Players.players.size()))
+	return Rect2(Vector2(w * index, 0.0), Vector2(w, screen.y))
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo:
-		var key := (event as InputEventKey).keycode
-		if DEBUG_HEROES.has(key):
-			RunManager.start_run(DEBUG_HEROES[key])
-			get_tree().reload_current_scene()
+	if not (event is InputEventKey and event.pressed and not event.echo):
+		return
+	match (event as InputEventKey).keycode:
+		KEY_1: _swap_p1(&"tracer")
+		KEY_2: _swap_p1(&"striker")
+		KEY_G: GameManager.friendly_fire = not GameManager.friendly_fire
+		KEY_V: _toggle_split()
+
+func _swap_p1(hero_id: StringName) -> void:
+	Players.set_hero(0, hero_id)
+	get_tree().reload_current_scene()
+
+func _toggle_split() -> void:
+	GameManager.split_screen = not GameManager.split_screen
+	get_tree().reload_current_scene()

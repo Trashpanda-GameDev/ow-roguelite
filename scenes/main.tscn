@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://bkslk24bga5h8" path="res://scripts/core/main.gd" id="1_main"]
 [ext_resource type="PackedScene" uid="uid://cdto1c6cx5rc4" path="res://scenes/levels/test_level.tscn" id="2_level"]
 [ext_resource type="Script" uid="uid://dn2y4pk2dvjle" path="res://scripts/ui/controls_hint.gd" id="3_controls"]
-[ext_resource type="Script" uid="uid://cd5gt5fjbk3oo" path="res://scripts/ui/ability_hud.gd" id="4_abilities"]
 [ext_resource type="Script" path="res://scripts/ui/hero_banner.gd" id="5_banner"]
 
 [node name="Main" type="Node" unique_id=1631579408]
@@ -30,17 +29,3 @@ offset_bottom = 84.0
 grow_horizontal = 2
 script = ExtResource("5_banner")
 
-[node name="AbilityHud" type="HBoxContainer" parent="HUD" unique_id=348539822]
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -760.0
-offset_top = -108.0
-offset_right = -24.0
-offset_bottom = -20.0
-grow_horizontal = 0
-grow_vertical = 0
-alignment = 2
-script = ExtResource("4_abilities")

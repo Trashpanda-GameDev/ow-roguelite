@@ -64,7 +64,7 @@ func setup(new_hero: Hero, caster: Node) -> void:
 			_recharge[slot] = 0.0
 			EventBus.charges_changed.emit(_ACTION_BY_SLOT[slot], ability.max_charges, ability.max_charges)
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if hero == null:
 		return
 	for slot in _cooldowns:
@@ -72,11 +72,14 @@ func _process(delta: float) -> void:
 			_cooldowns[slot] = maxf(0.0, _cooldowns[slot] - delta)
 	_tick_reloads(delta)
 	_tick_charges(delta)
+	var pi: PlayerInput = _caster.input if _caster and "input" in _caster else null
+	if pi == null:
+		return
 	for slot in _ACTION_BY_SLOT:
 		var action: StringName = _ACTION_BY_SLOT[slot]
 		# Attacks auto-repeat while held (rate limited by cooldown); other
 		# abilities require a fresh press.
-		var triggered := Input.is_action_pressed(action) if _is_attack(slot) else Input.is_action_just_pressed(action)
+		var triggered := pi.is_pressed(action) if _is_attack(slot) else pi.is_just_pressed(action)
 		if triggered:
 			_try_use(slot)
 

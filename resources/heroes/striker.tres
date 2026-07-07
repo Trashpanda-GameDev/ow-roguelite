@@ -5,23 +5,14 @@
 [ext_resource type="Script" uid="uid://cxwnadvy2xass" path="res://scripts/heroes/abilities/dash_ability.gd" id="3_dash"]
 [ext_resource type="Script" uid="uid://dioymsoxk8pgb" path="res://scripts/heroes/abilities/projectile_ability.gd" id="4_proj_ab"]
 [ext_resource type="Script" uid="uid://c0vcfcmcr6tu4" path="res://scripts/heroes/abilities/aoe_burst.gd" id="5_aoe"]
-[ext_resource type="Script" path="res://scripts/heroes/abilities/ground_slam.gd" id="7_slam"]
 [ext_resource type="PackedScene" uid="uid://cf3gfan0p2beb" path="res://scenes/projectiles/projectile.tscn" id="6_proj"]
+[ext_resource type="Script" uid="uid://cy7oo84lcbb5o" path="res://scripts/heroes/abilities/ground_slam.gd" id="7_slam"]
 
 [sub_resource type="Resource" id="Ability_slam"]
 script = ExtResource("7_slam")
 display_name = "Ground Slam"
 description = "Slam to the ground; the higher you are, the harder it hits."
 cooldown = 3.0
-slam_speed = 1500.0
-descent_damage = 12.0
-descent_radius = 42.0
-base_damage = 20.0
-damage_per_height = 0.2
-max_damage = 220.0
-radius = 140.0
-lifetime = 0.2
-knockback = 380.0
 
 [sub_resource type="Resource" id="Ability_dash"]
 script = ExtResource("3_dash")

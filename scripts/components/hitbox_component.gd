@@ -13,6 +13,7 @@ signal hit(hurtbox: HurtboxComponent)
 @export var can_hit_self: bool = false ## true = also damages its own source (e.g. an AoE that hurts the caster)
 
 var source: Node ## the entity that owns/fired this hitbox
+var team: int = -1 ## source's team; -1 = neutral (hits everyone)
 var knockback_dir: Vector2 = Vector2.ZERO ## preferred push direction; auto if zero
 var grants_ult_charge: bool = true ## whether hits build the source's ultimate charge
 

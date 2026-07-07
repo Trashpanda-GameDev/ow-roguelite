@@ -8,6 +8,7 @@ const ROWS := [
 	["Move", &"move_left"], # special-cased
 	["Jump", &"jump"],
 	["Interact", &"interact"],
+	["Switch Hero", &"switch_character"],
 	["Pause", &"pause"],
 ]
 

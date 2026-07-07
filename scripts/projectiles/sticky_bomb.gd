@@ -25,6 +25,7 @@ func setup(dir: Vector2, speed: float, damage: float, knockback: float, source: 
 	hitbox.knockback_dir = dir
 	hitbox.source = source
 	hitbox.grants_ult_charge = grants_ult_charge
+	hitbox.team = team
 
 func _physics_process(delta: float) -> void:
 	if _stuck:

@@ -18,34 +18,37 @@ const ORDER := [
 
 var _hero: Hero
 var _controller: AbilityController
+var _target: Node
 var _tiles := {} # slot -> {fill, button, status}
 var _use_gamepad: bool = false
 
 func _ready() -> void:
 	add_theme_constant_override(&"separation", 8)
-	_use_gamepad = not Input.get_connected_joypads().is_empty()
-	Input.joy_connection_changed.connect(func(_d, _c): _refresh_bindings())
-	EventBus.player_spawned.connect(_on_player_spawned)
-	var existing := get_tree().get_first_node_in_group(&"player")
-	if existing:
-		_bind(existing)
 
-func _input(event: InputEvent) -> void:
-	var was := _use_gamepad
-	if event is InputEventJoypadButton or event is InputEventJoypadMotion:
-		_use_gamepad = true
-	elif event is InputEventKey or event is InputEventMouseButton or event is InputEventMouseMotion:
-		_use_gamepad = false
-	if was != _use_gamepad:
-		_refresh_bindings()
+## Bind to a specific player (its hero, ability controller, and input device).
+func bind_to(player: Node) -> void:
+	_target = player
+	if not EventBus.player_spawned.is_connected(_on_player_respawned):
+		EventBus.player_spawned.connect(_on_player_respawned)
+	_apply_binding()
 
-func _on_player_spawned(player: Node) -> void:
-	_bind(player)
+## Re-bind when our player hot-swaps hero (emits player_spawned).
+func _on_player_respawned(player: Node) -> void:
+	if player == _target:
+		_apply_binding()
 
-func _bind(player: Node) -> void:
-	_hero = player.hero if "hero" in player else null
-	_controller = player.abilities if "abilities" in player else null
+func _apply_binding() -> void:
+	if not is_instance_valid(_target):
+		return
+	_hero = _target.hero if "hero" in _target else null
+	_controller = _target.abilities if "abilities" in _target else null
+	var pi = _target.input if "input" in _target else null
+	_use_gamepad = pi != null and pi.device >= 0
 	_rebuild()
+
+## Position the tile row at the bottom-left of a screen region (pixels).
+func place_in(rect: Rect2) -> void:
+	position = rect.position + Vector2(16, rect.size.y - 92)
 
 func _rebuild() -> void:
 	for c in get_children():

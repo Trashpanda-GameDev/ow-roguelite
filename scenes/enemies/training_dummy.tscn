@@ -43,6 +43,7 @@ collision_layer = 64
 collision_mask = 264
 script = ExtResource("3_hurtbox")
 health = NodePath("../HealthComponent")
+team = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
 shape = SubResource("RectangleShape2D_hurt")

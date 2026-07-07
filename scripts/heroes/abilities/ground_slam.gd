@@ -1,8 +1,9 @@
 @tool
 class_name GroundSlamAbility
 extends Ability
-## Aerial slam: the caster rockets straight down, damaging things it passes
-## through, and on landing bursts for AoE damage that scales with fall distance.
+## Aerial slam: rockets the caster down (damaging things it passes through) and
+## bursts on landing for AoE damage that scales with fall distance. Runs as a
+## SlamEffect so all the motion logic lives with the ability.
 
 @export var slam_speed: float = 1500.0
 @export_group("Descent")
@@ -21,9 +22,9 @@ func can_activate(caster: Node) -> bool:
 	return caster.has_method("is_on_floor") and not caster.is_on_floor()
 
 func activate(caster: Node, _aim_dir: Vector2) -> bool:
-	if not caster.has_method("start_slam"):
+	if not caster.has_method("play_motion_effect"):
 		return false
-	caster.start_slam({
+	caster.play_motion_effect(SlamEffect.new({
 		"slam_speed": slam_speed,
 		"descent_damage": descent_damage,
 		"descent_radius": descent_radius,
@@ -34,5 +35,5 @@ func activate(caster: Node, _aim_dir: Vector2) -> bool:
 		"lifetime": lifetime,
 		"knockback": knockback,
 		"grants_ult_charge": not is_ultimate,
-	})
+	}))
 	return true

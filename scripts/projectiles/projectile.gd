@@ -15,6 +15,7 @@ extends Node2D
 
 var velocity: Vector2 = Vector2.ZERO
 var grants_ult_charge: bool = true ## set by the spawner; false for ultimates
+var team: int = -1 ## set by the spawner; carried onto the hitbox + explosion
 
 func _ready() -> void:
 	hitbox.hit.connect(func(_hurtbox): _die())
@@ -32,6 +33,7 @@ func setup(dir: Vector2, speed: float, damage: float, knockback: float, source: 
 	hitbox.knockback_dir = dir
 	hitbox.source = source
 	hitbox.grants_ult_charge = grants_ult_charge
+	hitbox.team = team
 
 func _die() -> void:
 	if explosion_radius > 0.0:
@@ -46,6 +48,7 @@ func _spawn_explosion() -> void:
 	hb.damage = explosion_damage
 	hb.knockback = explosion_knockback
 	hb.source = hitbox.source
+	hb.team = team
 	hb.can_hit_self = explosion_hits_self
 	hb.grants_ult_charge = grants_ult_charge
 	hb.collision_layer = 1 << 3 # player_hitbox

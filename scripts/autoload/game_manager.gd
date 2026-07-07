@@ -4,7 +4,12 @@ extends Node
 enum State { BOOT, MENU, RUN, PAUSED, GAME_OVER }
 
 var state: State = State.BOOT
+var friendly_fire: bool = false ## can players damage teammates
+var split_screen: bool = false ## split-screen vs shared framing camera
 var _paused: bool = false
+
+const TEAM_PLAYER := 0
+const TEAM_ENEMY := 1
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS

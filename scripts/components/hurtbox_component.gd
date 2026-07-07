@@ -5,6 +5,7 @@ extends Area2D
 ## "*_hitbox" receiving layer and enable monitoring.
 
 @export var health: HealthComponent
+@export var team: int = 0 ## this entity's team (for friendly-fire filtering)
 
 func _ready() -> void:
 	if health == null:
@@ -23,8 +24,11 @@ func _find_health() -> HealthComponent:
 func _on_area_entered(area: Area2D) -> void:
 	if area is HitboxComponent:
 		var hitbox := area as HitboxComponent
-		if hitbox.source == owner and not hitbox.can_hit_self:
-			return # ignore self-damage unless the hitbox explicitly allows it
+		if hitbox.source == owner:
+			if not hitbox.can_hit_self:
+				return # ignore self-damage unless explicitly allowed
+		elif hitbox.team != -1 and hitbox.team == team and not GameManager.friendly_fire:
+			return # same team, friendly fire off
 		if health:
 			health.take_damage(hitbox.damage, hitbox.source, hitbox.grants_ult_charge)
 		hitbox.on_hit(self)
