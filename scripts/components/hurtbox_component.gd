@@ -27,7 +27,7 @@ func _on_area_entered(area: Area2D) -> void:
 		if hitbox.source == owner:
 			if not hitbox.can_hit_self:
 				return # ignore self-damage unless explicitly allowed
-		elif hitbox.team != -1 and hitbox.team == team and not GameManager.friendly_fire:
+		elif hitbox.team != -1 and hitbox.team == team and not GameManager.team_allows_friendly_fire(team):
 			return # same team, friendly fire off
 		if health:
 			health.take_damage(hitbox.damage, hitbox.source, hitbox.grants_ult_charge)
