@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cti0mln0gqtab" path="res://scripts/projectiles/sticky_bomb.gd" id="1_bomb"]
 [ext_resource type="Script" uid="uid://6f3esx6j7aa1" path="res://scripts/components/hitbox_component.gd" id="2_hitbox"]
+[ext_resource type="PackedScene" uid="uid://bpulseexpl01x" path="res://scenes/combat/pulse_explosion_hitbox.tscn" id="3_explosion"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_bomb"]
 radius = 12.0
@@ -9,7 +10,7 @@ radius = 12.0
 [node name="PulseBomb" type="Node2D" unique_id=926201577]
 script = ExtResource("1_bomb")
 lifetime = 1.3
-explosion_radius = 150.0
+explosion_hitbox_scene = ExtResource("3_explosion")
 explosion_damage = 300.0
 explosion_knockback = 460.0
 explosion_hits_self = true

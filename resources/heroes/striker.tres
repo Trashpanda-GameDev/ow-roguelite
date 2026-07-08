@@ -7,9 +7,15 @@
 [ext_resource type="Script" uid="uid://c0vcfcmcr6tu4" path="res://scripts/heroes/abilities/aoe_burst.gd" id="5_aoe"]
 [ext_resource type="PackedScene" uid="uid://cf3gfan0p2beb" path="res://scenes/projectiles/projectile.tscn" id="6_proj"]
 [ext_resource type="Script" uid="uid://cy7oo84lcbb5o" path="res://scripts/heroes/abilities/ground_slam.gd" id="7_slam"]
+[ext_resource type="PackedScene" uid="uid://bmeleehitbox01" path="res://scenes/combat/melee_hitbox.tscn" id="8_melee_hb"]
+[ext_resource type="PackedScene" uid="uid://baoehitbox01x" path="res://scenes/combat/aoe_hitbox.tscn" id="9_aoe_hb"]
+[ext_resource type="PackedScene" uid="uid://bslamdescent01" path="res://scenes/combat/slam_descent_hitbox.tscn" id="10_slam_desc"]
+[ext_resource type="PackedScene" uid="uid://bslamburst01x" path="res://scenes/combat/slam_burst_hitbox.tscn" id="11_slam_burst"]
 
 [sub_resource type="Resource" id="Ability_slam"]
 script = ExtResource("7_slam")
+descent_hitbox_scene = ExtResource("10_slam_desc")
+burst_hitbox_scene = ExtResource("11_slam_burst")
 display_name = "Ground Slam"
 description = "Slam to the ground; the higher you are, the harder it hits."
 cooldown = 3.0
@@ -22,6 +28,7 @@ cooldown = 0.8
 
 [sub_resource type="Resource" id="Ability_primary"]
 script = ExtResource("2_slash")
+hitbox_scene = ExtResource("8_melee_hb")
 damage = 30.0
 reach = 64.0
 knockback = 320.0
@@ -41,8 +48,8 @@ projectile_scene = ExtResource("6_proj")
 
 [sub_resource type="Resource" id="Ability_ultimate"]
 script = ExtResource("5_aoe")
+hitbox_scene = ExtResource("9_aoe_hb")
 damage = 90.0
-radius = 220.0
 lifetime = 0.4
 knockback = 440.0
 display_name = "Blade Storm"
