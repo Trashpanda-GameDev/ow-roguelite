@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://du3svue13hcom"]
+
+[ext_resource type="PackedScene" uid="uid://c0hb0xspawn01" path="res://scenes/combat/hitbox.tscn" id="1_base"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_melee"]
+size = Vector2(48, 48)
+
+[node name="Hitbox" instance=ExtResource("1_base")]
+visual_color = Color(1, 1, 1, 0.7)
+visual_flash = true
+
+[node name="CollisionShape2D" parent="." index="0"]
+shape = SubResource("RectangleShape2D_melee")

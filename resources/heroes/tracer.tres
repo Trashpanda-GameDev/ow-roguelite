@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://bqh2cr6tb8oog" path="res://scripts/heroes/abilities/recall_ability.gd" id="5_recall"]
 [ext_resource type="PackedScene" uid="uid://cf3gfan0p2beb" path="res://scenes/projectiles/projectile.tscn" id="6_bolt"]
 [ext_resource type="PackedScene" uid="uid://dhpdbmnljliwr" path="res://scenes/projectiles/pulse_bomb.tscn" id="7_bomb"]
+[ext_resource type="PackedScene" uid="uid://bmeleehitbox01" path="res://scenes/combat/melee_hitbox.tscn" id="8_melee_hb"]
 
 [sub_resource type="Resource" id="Ability_recall"]
 script = ExtResource("5_recall")
@@ -36,6 +37,7 @@ max_ammo = 10
 
 [sub_resource type="Resource" id="Ability_secondary"]
 script = ExtResource("3_melee")
+hitbox_scene = ExtResource("8_melee_hb")
 damage = 22.0
 reach = 56.0
 lifetime = 0.1

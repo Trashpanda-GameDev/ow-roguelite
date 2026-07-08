@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://bv6xite5nswn5" path="res://scripts/components/hurtbox_component.gd" id="3_hurtbox"]
 [ext_resource type="Script" uid="uid://8yoq0hxve45r" path="res://scripts/player/ability_controller.gd" id="4_ability"]
 [ext_resource type="Script" uid="uid://3eutgkr32b3c" path="res://scripts/ui/health_bar.gd" id="5_healthbar"]
-[ext_resource type="Script" path="res://scripts/player/player_input.gd" id="6_input"]
+[ext_resource type="Script" uid="uid://bo8eerji6pbhm" path="res://scripts/player/player_input.gd" id="6_input"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
 radius = 18.0
@@ -41,7 +41,7 @@ script = ExtResource("2_health")
 
 [node name="HurtboxComponent" type="Area2D" parent="." unique_id=1954731948]
 collision_layer = 16
-collision_mask = 40
+collision_mask = 8
 script = ExtResource("3_hurtbox")
 health = NodePath("../HealthComponent")
 
@@ -51,7 +51,7 @@ shape = SubResource("CapsuleShape2D_hurt")
 [node name="AbilityController" type="Node" parent="." unique_id=1807488001]
 script = ExtResource("4_ability")
 
-[node name="PlayerInput" type="Node" parent="."]
+[node name="PlayerInput" type="Node" parent="." unique_id=767103614]
 script = ExtResource("6_input")
 
 [node name="HitboxPivot" type="Node2D" parent="." unique_id=187937818]

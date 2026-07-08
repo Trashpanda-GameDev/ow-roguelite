@@ -19,7 +19,6 @@ extends CharacterBody2D
 @export var jump_cut_multiplier: float = 0.45 ## velocity kept on early release
 @export var max_fall_speed: float = 1200.0
 
-const HITBOX_LAYER := 1 << 3 # player_hitbox
 const MUZZLE_OFFSET := Vector2(0, -16) # center of the top half
 
 var _gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity", 1600.0)
@@ -197,9 +196,6 @@ func set_facing(dir_x: float) -> void:
 
 func get_team() -> int:
 	return team
-
-func get_hitbox_layer() -> int:
-	return HITBOX_LAYER
 
 func get_world() -> Node:
 	return get_parent() if get_parent() else self
